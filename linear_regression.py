@@ -107,17 +107,12 @@ def mapping_data(X, p):
     #####################################################
     # TODO 6: Fill in your code here                    #
     #####################################################
-    ref = np.asarray(X)
-    X = [X]
-    for i in range(p-1):
-        X.append(np.zeros(ref.shape))
-    for i in range(len(ref)):
-        for j in range(2,p+1):
-            X[j-1][i] = ref[i]**j
-    print(p)
-    print(ref.shape)
-    print(np.shape(X))
-    return np.asarray(X)
+    ref = X
+    for j in range(2,p+1):
+        for i in range(len(ref[0])):
+            X = np.insert(X, len(X[0]), ref[:, i] ** j, axis=1)
+    return X
+
 
 
 """
