@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 ############################################################################
 # DO NOT MODIFY CODES ABOVE 
 # DO NOT CHANGE THE INPUT AND OUTPUT FORMAT
@@ -20,24 +21,27 @@ def mean_square_error(w, X, y):
     #####################################################
     # TODO 1: Fill in your code here                    #
     #####################################################
-    err = None
+    y_pred = np.dot(X, w)
+    err = np.mean((y_pred - y) ** 2)
     return err
+
 
 ###### Part 1.2 ######
 def linear_regression_noreg(X, y):
-  """
-  Compute the weight parameter given X and y.
-  Inputs:
-  - X: A numpy array of shape (num_samples, D) containing features
-  - y: A numpy array of shape (num_samples, ) containing labels
-  Returns:
-  - w: a numpy array of shape (D, )
-  """
-  #####################################################
-  #	TODO 2: Fill in your code here                    #
-  #####################################################		
-  w = None
-  return w
+    """
+    Compute the weight parameter given X and y.
+    Inputs:
+    - X: A numpy array of shape (num_samples, D) containing features
+    - y: A numpy array of shape (num_samples, ) containing labels
+    Returns:
+    - w: a numpy array of shape (D, )
+    """
+    #####################################################
+    #	TODO 2: Fill in your code here                    #
+    #####################################################
+    xTx_inv = np.linalg.inv(X.T @ X)
+    w = np.dot(xTx_inv, X.T @ y)
+    return w
 
 
 ###### Part 1.3 ######
@@ -51,11 +55,16 @@ def regularized_linear_regression(X, y, lambd):
     Returns:
     - w: a numpy array of shape (D, )
     """
-  #####################################################
-  # TODO 4: Fill in your code here                    #
-  #####################################################		
-    w = None
+    #####################################################
+    # TODO 4: Fill in your code here                    #
+    #####################################################
+    xTx = X.T @ X
+    regulariser = lambd*np.eye(xTx.shape[0])
+    xTx += regulariser
+    xTx_inv = np.linalg.inv(xTx)
+    w = np.dot(xTx_inv, X.T @ y)
     return w
+
 
 ###### Part 1.4 ######
 def tune_lambda(Xtrain, ytrain, Xval, yval):
@@ -71,10 +80,19 @@ def tune_lambda(Xtrain, ytrain, Xval, yval):
     """
     #####################################################
     # TODO 5: Fill in your code here                    #
-    #####################################################		
+    #####################################################
     bestlambda = None
+    best_err = np.inf
+    for i in range(14,-1,-1):
+        lamb = 2**(-i)
+        w = regularized_linear_regression(Xtrain, ytrain, lamb)
+        err = mean_square_error(w, Xval, yval)
+        if err<=best_err:
+            best_err = err
+            bestlambda = lamb
     return bestlambda
-    
+
+
 
 ###### Part 1.6 ######
 def mapping_data(X, p):
@@ -88,12 +106,21 @@ def mapping_data(X, p):
     """
     #####################################################
     # TODO 6: Fill in your code here                    #
-    #####################################################		
-    
-    return X
+    #####################################################
+    ref = np.asarray(X)
+    X = [X]
+    for i in range(p-1):
+        X.append(np.zeros(ref.shape))
+    for i in range(len(ref)):
+        for j in range(2,p+1):
+            X[j-1][i] = ref[i]**j
+    print(p)
+    print(ref.shape)
+    print(np.shape(X))
+    return np.asarray(X)
+
 
 """
 NO MODIFICATIONS below this line.
 You should only write your code in the above functions.
 """
-
